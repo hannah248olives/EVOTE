@@ -1,0 +1,48 @@
+name: Bug report
+description: Something is broken or behaves differently from the acceptance criteria
+labels: ["bug"]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      value: "1. \n2. \n3. "
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Critical - data exposure, vote integrity, or system down
+        - High - a main flow is broken
+        - Medium - degraded behaviour with a workaround
+        - Low - cosmetic
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Branch or commit, local or deployed, browser/OS, relevant logs (redacted).
+  - type: checkboxes
+    id: hygiene
+    attributes:
+      label: Before submitting
+      options:
+        - label: This report contains no secrets, tokens, or personal data (names, emails, IDs)
+          required: true
+        - label: This is not a security vulnerability (those go through private reporting)
+          required: true

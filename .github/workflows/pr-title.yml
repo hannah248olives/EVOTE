@@ -1,0 +1,27 @@
+name: PR title
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+permissions: {}
+
+jobs:
+  conventions:
+    name: title follows conventions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate pull request title
+        shell: bash
+        env:
+          # Passed through the environment, never interpolated into the script (injection-safe).
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          ticket='EVT-[0-9]{3}: .+'
+          conventional='(feat|fix|chore|docs|test|refactor|perf|ci|build)(\([a-z0-9-]+\))?: .+'
+          if [[ "$TITLE" =~ ^($ticket|$conventional)$ ]]; then
+            echo "Title OK: $TITLE"
+          else
+            echo "::error title=Invalid PR title::Use 'EVT-123: Short summary' or a conventional title such as 'chore(ci): short summary'. Got: $TITLE"
+            exit 1
+          fi
