@@ -73,6 +73,40 @@ terraform plan -out=tfplan
 terraform apply tfplan
 ```
 
+## Development does not wait for AWS
+
+Nothing in Sprints 0 to 4 needs this AWS environment. Day-to-day development runs on the local
+Docker stack (Postgres and Redis, EVT-005), so no ticket is blocked by AWS access, cost or account
+ownership. AWS is first needed for a shared staging environment and for production (Sprint 5).
+
+## Handing over to the team's AWS account
+
+The code is account-independent: no account IDs, no credentials and no region are hard-coded
+(the region is the `aws_region` variable and the state bucket name is derived from the account ID).
+Whoever owns the team account configures cost and sizing through variables, not by editing code:
+
+| Decision | Where | Default |
+| --- | --- | --- |
+| Create the database | `enable_database` | `true` (the sandbox sets `false`) |
+| Create the cache | `enable_cache` | `true` (the sandbox sets `false`) |
+| Database size ceiling | `database_min_acu` / `database_max_acu` | `0.5` / `2` |
+| Cache node size and count | `cache_node_type` (module `node_count`) | `cache.t4g.micro` / `1` |
+| NAT gateway (egress) | `enable_nat_gateway` | `false` |
+| Region | `aws_region` | `eu-north-1` |
+
+Steps to move to the team account:
+
+1. Create or choose the account; give each member their own limited identity (no root user, MFA on
+   root). Set a budget alert.
+2. In the old sandbox: `terraform destroy` (the network-only stack is free and removes cleanly).
+3. In the new account run `bootstrap/` once to create the state bucket.
+4. In `envs/dev`: delete any local `backend_override.tf` and `terraform.tfstate`, create
+   `backend.hcl` from the example, then `terraform init -backend-config=backend.hcl`.
+5. Review `terraform.tfvars` (start from `terraform.tfvars.example`), then `plan` and `apply`.
+
+If the sandbox must be kept instead of destroyed, move its state with
+`terraform init -migrate-state -backend-config=backend.hcl`.
+
 ## Everyday workflow
 
 1. Change code on a `feat/evt-<n>-<slug>` branch.
