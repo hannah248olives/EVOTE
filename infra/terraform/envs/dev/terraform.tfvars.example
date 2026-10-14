@@ -1,0 +1,12 @@
+# Copy to terraform.tfvars (git-ignored) to choose how much of the stack to create.
+#
+# ZERO-COST sandbox: only the network layer (VPC, subnets, route tables, security groups).
+# None of these resources is billed. This is the right setting for a personal AWS account.
+aws_region      = "eu-north-1"
+enable_database = false
+enable_cache    = false
+# enable_nat_gateway stays false (a NAT gateway costs about USD 32/month).
+
+# FULL dev environment (billed while it exists, roughly USD 60-110/month):
+# enable_database = true
+# enable_cache    = true

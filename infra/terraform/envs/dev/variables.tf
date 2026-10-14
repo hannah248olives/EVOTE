@@ -22,6 +22,18 @@ variable "enable_nat_gateway" {
   default     = false
 }
 
+variable "enable_database" {
+  description = "Create the Aurora PostgreSQL cluster. It is billed per hour; set false for a zero-cost sandbox (network only)."
+  type        = bool
+  default     = true
+}
+
+variable "enable_cache" {
+  description = "Create the ElastiCache Redis group and its secret. They are billed per hour; set false for a zero-cost sandbox."
+  type        = bool
+  default     = true
+}
+
 variable "database_min_acu" {
   description = "Minimum Aurora Capacity Units (0.5 = always on, lowest cost that stays available)."
   type        = number

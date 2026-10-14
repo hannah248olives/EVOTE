@@ -12,6 +12,7 @@ module "network" {
 
 module "database" {
   source = "../../modules/database"
+  count  = var.enable_database ? 1 : 0
 
   name                       = local.name
   vpc_id                     = module.network.vpc_id
@@ -28,6 +29,7 @@ module "database" {
 
 module "cache" {
   source = "../../modules/cache"
+  count  = var.enable_cache ? 1 : 0
 
   name                       = local.name
   vpc_id                     = module.network.vpc_id

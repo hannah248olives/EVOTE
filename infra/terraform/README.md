@@ -30,6 +30,14 @@ modules with different inputs.
 
 Estimated dev total: **about USD 60–110 / month** while running. `terraform destroy` removes it all.
 
+### Zero-cost mode
+
+The database and the cache are the only billed parts. Set `enable_database = false` and
+`enable_cache = false` (see `envs/dev/terraform.tfvars.example`) to create **only the network
+layer**: VPC, 4 subnets, internet gateway, route tables, security groups (15 resources, none of
+which AWS charges for; no public IPs, no NAT gateway). Use this in a personal AWS account.
+Turn the switches on only in an account the team has agreed to pay for.
+
 ## Outputs
 
 `terraform output` returns the DB and Redis URLs. **They never contain credentials.** Fetch the
