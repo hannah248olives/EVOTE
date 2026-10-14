@@ -37,8 +37,8 @@ password / token from the Secrets Manager ARN in the matching output and inject 
 
 | Output | Example |
 | --- | --- |
-| `database_url` | `postgres://evote_admin@evote-dev.cluster-xxxx.eu-west-1.rds.amazonaws.com:5432/evote` |
-| `redis_url` | `rediss://master.evote-dev.xxxx.euw1.cache.amazonaws.com:6379` |
+| `database_url` | `postgres://evote_admin@evote-dev.cluster-xxxx.eu-north-1.rds.amazonaws.com:5432/evote` |
+| `redis_url` | `rediss://master.evote-dev.xxxx.eun1.cache.amazonaws.com:6379` |
 | `database_master_secret_arn` / `redis_auth_token_secret_arn` | Secrets Manager ARNs |
 
 ## Prerequisites
@@ -87,8 +87,13 @@ terraform apply tfplan
 - **Redis version.** Charter v5.0 names Redis 7.2, but ElastiCache for Redis OSS tops out at 7.1.
   Dev uses 7.1. 7.2 exists on ElastiCache only as Valkey (`engine = "valkey"`), which is
   wire-compatible and cheaper; BullMQ works with it. Decide before production.
-- **Region.** `eu-west-1` is a safe default (full service availability). `af-south-1` is closer to
-  users but is opt-in and must be enabled per account; revisit for production.
+- **Region.** Dev defaults to `eu-north-1` (Stockholm), where the dev account lives; Aurora
+  PostgreSQL 16 (Serverless v2) and ElastiCache Redis 7.1 were confirmed available there.
+  `af-south-1` is closer to users but is opt-in and must be enabled per account; revisit for
+  production.
+- **PostgreSQL version.** AWS's default Aurora PostgreSQL version is now 17.x, but the charter
+  specifies 16. The database module therefore picks the first available entry of
+  `preferred_engine_versions` (16.15 down to 16.8) instead of the AWS default.
 - **Cost knob.** Setting `database_min_acu = 0` enables Aurora auto-pause in dev (requires a
   supported engine minor). Default stays `0.5` so the environment is always available.
 - **Not included yet** (follow-up tickets): VPC flow logs, WAF, EKS, the CI role for OIDC-based

@@ -16,7 +16,7 @@ terraform {
 variable "aws_region" {
   description = "Region of the state bucket."
   type        = string
-  default     = "eu-west-1"
+  default     = "eu-north-1"
 }
 
 provider "aws" {

@@ -9,15 +9,18 @@ terraform {
   }
 }
 
-# Resolve AWS's current default Aurora PostgreSQL 16 minor, unless one is pinned explicitly.
+# Pick the first available version from an ordered list of PostgreSQL 16 minors, unless one is
+# pinned explicitly. AWS's own "default" version is a newer major (17.x), so it must not be used:
+# the charter specifies PostgreSQL 16.
 data "aws_rds_engine_version" "this" {
-  engine                 = "aurora-postgresql"
-  parameter_group_family = "aurora-postgresql${var.engine_major_version}"
-  default_only           = true
+  count = var.engine_version == null ? 1 : 0
+
+  engine             = "aurora-postgresql"
+  preferred_versions = var.preferred_engine_versions
 }
 
 locals {
-  engine_version = coalesce(var.engine_version, data.aws_rds_engine_version.this.version)
+  engine_version = var.engine_version != null ? var.engine_version : data.aws_rds_engine_version.this[0].version
 }
 
 resource "aws_db_subnet_group" "this" {

@@ -31,14 +31,14 @@ variable "master_username" {
   default     = "evote_admin"
 }
 
-variable "engine_major_version" {
-  description = "Aurora PostgreSQL major version (Charter v5.0 specifies 16)."
-  type        = string
-  default     = "16"
+variable "preferred_engine_versions" {
+  description = "Aurora PostgreSQL 16 minors in order of preference; the first one available in the region is used (Charter v5.0 specifies PostgreSQL 16)."
+  type        = list(string)
+  default     = ["16.15", "16.14", "16.13", "16.11", "16.10", "16.9", "16.8"]
 }
 
 variable "engine_version" {
-  description = "Pin an exact engine version. Null uses the AWS default minor for engine_major_version."
+  description = "Pin an exact engine version. Null picks the first available entry of preferred_engine_versions."
   type        = string
   default     = null
 }
