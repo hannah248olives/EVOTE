@@ -29,21 +29,27 @@ variable "enable_database" {
 }
 
 variable "enable_cache" {
-  description = "Create the ElastiCache Redis group and its secret. They are billed per hour; set false for a zero-cost sandbox."
+  description = "Create the ElastiCache Redis group and its secret. Billed per hour and it cannot pause: leave false and use the local Docker Redis, enable only for a short integration test, then destroy."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "database_min_acu" {
-  description = "Minimum Aurora Capacity Units (0.5 = always on, lowest cost that stays available)."
+  description = "Minimum Aurora Capacity Units. 0 = auto-pause when idle (least cost, first connection after a pause is slow). 0.5 = always on."
   type        = number
-  default     = 0.5
+  default     = 0
+}
+
+variable "database_backup_retention_days" {
+  description = "Automated backup retention in days (1 is the minimum). Dev data is disposable."
+  type        = number
+  default     = 1
 }
 
 variable "database_max_acu" {
-  description = "Maximum Aurora Capacity Units (cost ceiling for dev)."
+  description = "Maximum Aurora Capacity Units. This is the cost ceiling: 1 ACU is enough for development."
   type        = number
-  default     = 2
+  default     = 1
 }
 
 variable "cache_node_type" {

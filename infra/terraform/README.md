@@ -23,20 +23,33 @@ modules with different inputs.
 
 | Resource | Notes | Approx. cost |
 | --- | --- | --- |
-| VPC + 2 public / 2 private subnets | No NAT gateway by default | free |
-| Aurora PostgreSQL 16, Serverless v2, 1 instance | 0.5–2 ACU, 7-day backups, encrypted | ~USD 45–90 / month |
-| ElastiCache Redis, 1 × `cache.t4g.micro` | TLS in transit, encrypted at rest, AUTH token | ~USD 12 / month |
-| Secrets Manager (2 secrets) | DB master credentials, Redis AUTH token | ~USD 1 / month |
+| VPC + 2 public / 2 private subnets | No NAT gateway, no public IPs | free |
+| Aurora PostgreSQL 16, Serverless v2, 1 instance (`enable_database`) | 0 to 1 ACU with auto-pause, 1-day backups, encrypted | compute only while in use; idle: storage and one secret (cents per month) |
+| ElastiCache Redis, 1 x `cache.t4g.micro` (`enable_cache`, off by default) | TLS in transit, encrypted at rest, AUTH token. It cannot pause | about USD 12 / month if left on, about USD 0.02 per hour |
+| Secrets Manager secrets | DB master credentials (with the database), Redis AUTH token (with the cache) | about USD 0.40 each per month |
 
-Estimated dev total: **about USD 60–110 / month** while running. `terraform destroy` removes it all.
+Prices are approximate and depend on the region; check the AWS pricing pages and your own bill.
 
-### Zero-cost mode
+### Cost modes
 
-The database and the cache are the only billed parts. Set `enable_database = false` and
-`enable_cache = false` (see `envs/dev/terraform.tfvars.example`) to create **only the network
-layer**: VPC, 4 subnets, internet gateway, route tables, security groups (15 resources, none of
-which AWS charges for; no public IPs, no NAT gateway). Use this in a personal AWS account.
-Turn the switches on only in an account the team has agreed to pay for.
+Choose one in `envs/dev/terraform.tfvars` (a git-ignored copy of `terraform.tfvars.example`):
+
+| Mode | Settings | Cost |
+| --- | --- | --- |
+| **Network only** | `enable_database = false`, `enable_cache = false` | USD 0. 15 resources, none billed |
+| **Least cost** | `enable_database = true`, `enable_cache = false`, `database_min_acu = 0` | Pennies when idle; compute is billed only while the database is being used |
+| **Full** | both `true` | Redis is billed per hour until destroyed |
+
+Least cost notes:
+
+- With `database_min_acu = 0` the cluster **pauses itself after 5 idle minutes**. The first
+  connection after a pause takes several seconds, so clients must retry.
+- Open connections (a connection pool, a running dev server) keep it awake and billing. Stop them
+  when you are done.
+- Redis cannot pause. Development uses the local Docker Redis; create the ElastiCache group only for
+  an integration test and destroy it afterwards (`enable_cache = false`, then `apply`).
+- Production must use `database_min_acu = 0.5` or higher so it never pauses.
+- A budget alert warns about spend but does not stop it; AWS credits can also expire.
 
 ## Outputs
 
@@ -88,8 +101,8 @@ Whoever owns the team account configures cost and sizing through variables, not 
 | Decision | Where | Default |
 | --- | --- | --- |
 | Create the database | `enable_database` | `true` (the sandbox sets `false`) |
-| Create the cache | `enable_cache` | `true` (the sandbox sets `false`) |
-| Database size ceiling | `database_min_acu` / `database_max_acu` | `0.5` / `2` |
+| Create the cache | `enable_cache` | `false` (turn on for integration tests or production) |
+| Database capacity | `database_min_acu` / `database_max_acu` | `0` (auto-pause) / `1`; production: `0.5` or more |
 | Cache node size and count | `cache_node_type` (module `node_count`) | `cache.t4g.micro` / `1` |
 | NAT gateway (egress) | `enable_nat_gateway` | `false` |
 | Region | `aws_region` | `eu-north-1` |
@@ -136,7 +149,5 @@ If the sandbox must be kept instead of destroyed, move its state with
 - **PostgreSQL version.** AWS's default Aurora PostgreSQL version is now 17.x, but the charter
   specifies 16. The database module therefore picks the first available entry of
   `preferred_engine_versions` (16.15 down to 16.8) instead of the AWS default.
-- **Cost knob.** Setting `database_min_acu = 0` enables Aurora auto-pause in dev (requires a
-  supported engine minor). Default stays `0.5` so the environment is always available.
 - **Not included yet** (follow-up tickets): VPC flow logs, WAF, EKS, the CI role for OIDC-based
   applies (no long-lived AWS keys in GitHub), IaC security scanning.

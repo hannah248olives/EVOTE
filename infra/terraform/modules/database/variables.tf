@@ -43,8 +43,19 @@ variable "engine_version" {
   default     = null
 }
 
+variable "auto_pause_seconds" {
+  description = "Idle seconds before the cluster pauses. Only used when min_acu is 0."
+  type        = number
+  default     = 300
+
+  validation {
+    condition     = var.auto_pause_seconds >= 300 && var.auto_pause_seconds <= 86400
+    error_message = "auto_pause_seconds must be between 300 and 86400."
+  }
+}
+
 variable "min_acu" {
-  description = "Minimum Aurora Capacity Units. 0.5 is the lowest value that keeps the instance always on."
+  description = "Minimum Aurora Capacity Units. 0 enables auto-pause (no compute cost while idle; the first connection after a pause takes several seconds). 0.5 is the lowest always-on value. Use 0.5 or more for production."
   type        = number
   default     = 0.5
 

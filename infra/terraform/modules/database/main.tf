@@ -78,6 +78,9 @@ resource "aws_rds_cluster" "this" {
   serverlessv2_scaling_configuration {
     min_capacity = var.min_acu
     max_capacity = var.max_acu
+
+    # With min_acu = 0 the cluster pauses after this many idle seconds and stops billing compute.
+    seconds_until_auto_pause = var.min_acu == 0 ? var.auto_pause_seconds : null
   }
 
   tags = { Name = var.name }

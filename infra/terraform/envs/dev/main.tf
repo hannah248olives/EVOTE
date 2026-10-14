@@ -19,8 +19,9 @@ module "database" {
   subnet_ids                 = module.network.private_subnet_ids
   allowed_security_group_ids = [module.network.workloads_security_group_id]
 
-  min_acu = var.database_min_acu
-  max_acu = var.database_max_acu
+  min_acu               = var.database_min_acu
+  max_acu               = var.database_max_acu
+  backup_retention_days = var.database_backup_retention_days
 
   # Dev is disposable; staging/production must flip both of these.
   deletion_protection = false
