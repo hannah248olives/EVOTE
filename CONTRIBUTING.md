@@ -105,3 +105,30 @@ Repository rules cannot be enforced from files alone. A repository admin should 
 3. **General settings:** enable _Automatically delete head branches_.
 4. **Security:** enable secret scanning, push protection, Dependabot alerts and Dependabot security
    updates under _Settings → Code security_.
+
+## 9. Tracking work: the project board
+
+Work is tracked in **GitHub Issues and a GitHub Project board** so that everyone sees the same
+state, and pull requests tick tickets off automatically.
+
+- **One ticket = one issue** titled `EVT-123: Short summary`. Each issue carries the owner, the
+  support reviewer, the story points, the acceptance criteria and the Definition of Done.
+- **Labels:** `sprint-N`, `owner:<name>`, `area:<area>`, `pts:<n>`, plus `blocked` and `in-review`.
+  Each sprint is a **milestone** with its goal in the description.
+- **Board columns** (left to right; tickets never skip a column):
+
+  | Column      | Meaning                                        | Rule                                               |
+  | ----------- | ---------------------------------------------- | -------------------------------------------------- |
+  | Backlog     | Everything, prioritised                        | Owned by the Product Lead                          |
+  | To Do       | Committed for the current sprint               | Has an owner, an estimate and acceptance criteria  |
+  | In Progress | Being worked on                                | You pull it; **max 2 per person**; update it daily |
+  | Review      | Pull request open, awaiting review             | PR has a description and a requested reviewer      |
+  | Done        | Meets the Definition of Done, merged to `main` | Reviewer approved, CI green, demo-able             |
+
+- **Linking:** put `Closes #<issue>` in the pull request description. Merging then closes the issue
+  and moves the card to Done.
+- **Blocked?** Add the `blocked` label and say so at standup the same day. Never sit silently.
+- **Changing scope:** if a ticket is bigger than expected, split it and send the remainder back to
+  the Backlog rather than forcing it through.
+- **Sprint ceremonies** (planning, review, retrospective) use the milestone for the sprint as the
+  agenda; unfinished tickets are re-planned, never silently dropped.
