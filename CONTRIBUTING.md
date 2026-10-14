@@ -125,8 +125,9 @@ state, and pull requests tick tickets off automatically.
   | Review      | Pull request open, awaiting review             | PR has a description and a requested reviewer      |
   | Done        | Meets the Definition of Done, merged to `main` | Reviewer approved, CI green, demo-able             |
 
-- **Linking:** put `Closes #<issue>` in the pull request description. Merging then closes the issue
-  and moves the card to Done.
+- **Linking:** put `Closes #<issue>` in the pull request description. Merging then closes the issue.
+  With the board's built-in workflows enabled, the card also moves to Done; if they are not, move
+  it yourself.
 - **Blocked?** Add the `blocked` label and say so at standup the same day. Never sit silently.
 - **Changing scope:** if a ticket is bigger than expected, split it and send the remainder back to
   the Backlog rather than forcing it through.
