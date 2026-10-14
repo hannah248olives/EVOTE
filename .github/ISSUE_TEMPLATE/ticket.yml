@@ -1,0 +1,54 @@
+name: Ticket
+description: A planned unit of work (EVT-nnn) for a sprint
+title: "EVT-: "
+labels: ["ticket"]
+body:
+  - type: dropdown
+    id: sprint
+    attributes:
+      label: Sprint
+      options:
+        - Sprint 0 - Foundation & Infrastructure
+        - Sprint 1 - Multi-Tenancy, Auth & Election Configuration
+        - Sprint 2 - Kiosk Provisioning & Voting Engine
+        - Sprint 3 - Voting UI, Realtime, Projector & Teacher Dashboard
+        - Sprint 4 - Reports, Branding & Polish
+        - Sprint 5 - Testing, Security & Production Launch
+    validations:
+      required: true
+  - type: dropdown
+    id: points
+    attributes:
+      label: Story points (split anything above 5)
+      options: ["1", "2", "3", "5", "8"]
+    validations:
+      required: true
+  - type: input
+    id: owner
+    attributes:
+      label: Primary owner
+      description: One person. Name the support reviewer in the description.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What is being built and why, in two or three sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: criteria
+    attributes:
+      label: Acceptance criteria
+      description: A checklist the reviewer can verify. Write each item as `- [ ] ...`.
+      value: "- [ ] "
+    validations:
+      required: true
+  - type: checkboxes
+    id: dod
+    attributes:
+      label: Definition of Done
+      options:
+        - label: I understand the Definition of Done in CONTRIBUTING.md applies to this ticket
+          required: true

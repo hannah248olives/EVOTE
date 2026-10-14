@@ -1,0 +1,25 @@
+# Code owners are requested for review automatically on matching pull requests.
+# Ownership follows the Team Sprint Plan roles (primary first, support second).
+# Later matches take precedence over earlier ones.
+
+# Backend, election engine, authentication, tenancy
+/apps/api/                 @iranziresponse @hannah248olives
+
+# Database schema, migrations, data and realtime workers
+/packages/database/        @hannah248olives @iranziresponse
+/workers/                  @hannah248olives @iranziresponse
+
+# Frontend and the four user surfaces
+/apps/web/                 @namagandajackline001-source @Kwiki-Tonny
+
+# Infrastructure, CI/CD and repository configuration
+/infra/                    @iranziresponse @bernadettewt-collab
+/.github/                  @bernadettewt-collab @iranziresponse
+
+# Shared packages and tooling
+/packages/config/          @hannah248olives @iranziresponse
+
+# Product documentation
+/docs/                     @Kwiki-Tonny
+/README.md                 @Kwiki-Tonny
+/CONTRIBUTING.md           @Kwiki-Tonny @iranziresponse
