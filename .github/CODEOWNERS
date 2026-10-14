@@ -3,23 +3,23 @@
 # Later matches take precedence over earlier ones.
 
 # Backend, election engine, authentication, tenancy
-/apps/api/                 @iranziresponse-hue @hannah248olives
+/apps/api/                 @iranziresponse @hannah248olives
 
 # Database schema, migrations, data and realtime workers
-/packages/database/        @hannah248olives @iranziresponse-hue
-/workers/                  @hannah248olives @iranziresponse-hue
+/packages/database/        @hannah248olives @iranziresponse
+/workers/                  @hannah248olives @iranziresponse
 
 # Frontend and the four user surfaces
 /apps/web/                 @namagandajackline001-source @Kwiki-Tonny
 
 # Infrastructure, CI/CD and repository configuration
-/infra/                    @iranziresponse-hue @bernadettewt-collab
-/.github/                  @bernadettewt-collab @iranziresponse-hue
+/infra/                    @iranziresponse @bernadettewt-collab
+/.github/                  @bernadettewt-collab @iranziresponse
 
 # Shared packages and tooling
-/packages/config/          @hannah248olives @iranziresponse-hue
+/packages/config/          @hannah248olives @iranziresponse
 
 # Product documentation
 /docs/                     @Kwiki-Tonny
 /README.md                 @Kwiki-Tonny
-/CONTRIBUTING.md           @Kwiki-Tonny @iranziresponse-hue
+/CONTRIBUTING.md           @Kwiki-Tonny @iranziresponse
