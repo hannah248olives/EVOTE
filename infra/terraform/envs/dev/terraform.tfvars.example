@@ -1,0 +1,29 @@
+# Copy to terraform.tfvars (git-ignored) and uncomment ONE mode.
+aws_region = "eu-north-1"
+
+# ---------------------------------------------------------------------------------------------
+# Mode 1: NETWORK ONLY. USD 0. Nothing here is billed. Safe for any personal account.
+# ---------------------------------------------------------------------------------------------
+enable_database = false
+enable_cache    = false
+
+# ---------------------------------------------------------------------------------------------
+# Mode 2: LEAST COST (suitable for AWS credits). The database pauses itself when idle, so compute
+# costs nothing while nobody uses it. Idle cost is only storage and one secret (cents per month).
+# Redis stays off: the local Docker Redis serves development.
+# Note: connections that stay open (for example a connection pool) prevent pausing.
+# ---------------------------------------------------------------------------------------------
+# enable_database = true
+# enable_cache    = false
+# database_min_acu = 0
+# database_max_acu = 1
+
+# ---------------------------------------------------------------------------------------------
+# Mode 3: FULL (database + Redis). Billed hourly while it exists (about USD 60-110/month if left
+# on). Create it for an integration test, then `terraform destroy` or set enable_cache = false.
+# ---------------------------------------------------------------------------------------------
+# enable_database = true
+# enable_cache    = true
+# database_min_acu = 0.5   # always on
+
+# enable_nat_gateway stays false in every mode (a NAT gateway costs about USD 32/month).
