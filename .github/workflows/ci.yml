@@ -1,4 +1,5 @@
 name: CI
+
 on:
   pull_request:
     branches: [main]
@@ -6,21 +7,27 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ci:
     name: CI
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/setup@v1
-        with:
-          install: false
-      - uses: actions/setup-node@v4
+
+      # pnpm version comes from package.json "packageManager", Node from .nvmrc
+      - uses: pnpm/setup@v3
         with:
           node-version-file: .nvmrc
-          cache: pnpm
+          cache: true
+          install: false
+
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
       - run: pnpm format:check
-      - run: pnpm -r --if-present test
-      - run: pnpm -r --if-present build
+      - run: pnpm --filter @evote/api test
+      - run: pnpm --filter @evote/api build
