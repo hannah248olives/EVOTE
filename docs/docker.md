@@ -10,7 +10,7 @@ Starts Postgres 16, Redis 7.2 and the API with one command.
 
 All services should show `healthy`. Then check the API:
 
-    curl http://localhost:3000/health
+    curl http://localhost:3001/health
 
 ## Everyday commands
 

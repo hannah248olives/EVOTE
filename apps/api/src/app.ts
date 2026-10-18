@@ -1,4 +1,9 @@
+import { readFileSync } from "node:fs";
 import Fastify from "fastify";
+
+const { version } = JSON.parse(
+  readFileSync(new URL("../package.json", import.meta.url), "utf8"),
+) as { version: string };
 
 export function buildApp() {
   const app = Fastify({
@@ -7,9 +12,8 @@ export function buildApp() {
 
   const health = async () => ({
     status: "ok",
-    service: "evote-api",
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString(),
+    time: new Date().toISOString(),
+    version,
   });
 
   app.get("/health", health);
