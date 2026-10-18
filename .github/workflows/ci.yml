@@ -19,12 +19,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # pnpm version comes from package.json "packageManager", Node from .nvmrc
-      - uses: pnpm/setup@v3
+      # Use setup-node to read .nvmrc and enable pnpm cache, then install pnpm
+      - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-          cache: true
-          install: false
+          cache: 'pnpm'
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.9.1
+          run_install: false
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm lint
