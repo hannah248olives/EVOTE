@@ -23,7 +23,7 @@ jobs:
     name: fmt
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - uses: hashicorp/setup-terraform@v3
@@ -43,7 +43,7 @@ jobs:
           - infra/terraform/bootstrap
           - infra/terraform/envs/dev
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - uses: hashicorp/setup-terraform@v3
