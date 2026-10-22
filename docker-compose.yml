@@ -31,6 +31,28 @@ services:
       timeout: 5s
       retries: 10
 
+  # Runs once: applies the database migrations as the database owner, then gives the restricted
+  # application role (evote_app) a login. The API connects as that role so row-level security
+  # applies; the owner and superusers bypass it.
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    image: evote-api:dev
+    container_name: evote-migrate
+    restart: "no"
+    working_dir: /app/packages/database
+    command:
+      - sh
+      - -c
+      - node dist/migrate-cli.js && node dist/provision-app-role-cli.js
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-evote}:${POSTGRES_PASSWORD:-evote_dev_password}@postgres:5432/${POSTGRES_DB:-evote}
+      EVOTE_APP_PASSWORD: ${EVOTE_APP_PASSWORD:-evote_app_dev_password}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   api:
     build:
       context: .
@@ -43,13 +65,17 @@ services:
       PORT: 3001
       HOST: 0.0.0.0
       LOG_LEVEL: ${LOG_LEVEL:-info}
-      DATABASE_URL: postgres://${POSTGRES_USER:-evote}:${POSTGRES_PASSWORD:-evote_dev_password}@postgres:5432/${POSTGRES_DB:-evote}
+      # The restricted application role, never the database owner.
+      DATABASE_URL: postgres://evote_app:${EVOTE_APP_PASSWORD:-evote_app_dev_password}@postgres:5432/${POSTGRES_DB:-evote}
       REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET:-dev-only-access-secret-change-me-please-0123456789}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev-only-refresh-secret-change-me-please-0123456789}
+      TENANT_BASE_DOMAIN: ${TENANT_BASE_DOMAIN:-localhost}
     ports:
       - "${API_PORT:-3001}:3001"
     depends_on:
-      postgres:
-        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
       redis:
         condition: service_healthy
 
