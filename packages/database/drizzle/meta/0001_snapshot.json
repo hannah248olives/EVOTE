@@ -1,0 +1,497 @@
+{
+  "id": "984cb4e1-e6df-4b26-8f2d-a113fb1aa655",
+  "prevId": "7551a2b5-b860-4d68-b992-10bba9080dff",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.candidates": {
+      "name": "candidates",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "tenant_id": {
+          "name": "tenant_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position_id": {
+          "name": "position_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "class": {
+          "name": "class",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "photo_url": {
+          "name": "photo_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "manifesto": {
+          "name": "manifesto",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vetting_discipline": {
+          "name": "vetting_discipline",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vetting_academic": {
+          "name": "vetting_academic",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vetting_character": {
+          "name": "vetting_character",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vetting_interview": {
+          "name": "vetting_interview",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "vetting_total": {
+          "name": "vetting_total",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "generated": {
+            "type": "stored",
+            "as": "vetting_discipline + vetting_academic + vetting_character + vetting_interview"
+          }
+        },
+        "is_approved": {
+          "name": "is_approved",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {
+        "candidates_position_idx": {
+          "name": "candidates_position_idx",
+          "columns": [
+            {
+              "expression": "tenant_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "position_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "candidates_tenant_id_tenants_id_fk": {
+          "name": "candidates_tenant_id_tenants_id_fk",
+          "tableFrom": "candidates",
+          "columnsFrom": [
+            "tenant_id"
+          ],
+          "tableTo": "tenants",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        },
+        "candidates_position_fk": {
+          "name": "candidates_position_fk",
+          "tableFrom": "candidates",
+          "columnsFrom": [
+            "tenant_id",
+            "position_id"
+          ],
+          "tableTo": "positions",
+          "columnsTo": [
+            "tenant_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "candidates_tenant_id_id_pk": {
+          "name": "candidates_tenant_id_id_pk",
+          "columns": [
+            "tenant_id",
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "candidates_vetting_discipline_range": {
+          "name": "candidates_vetting_discipline_range",
+          "value": "\"candidates\".\"vetting_discipline\" between 0 and 25"
+        },
+        "candidates_vetting_academic_range": {
+          "name": "candidates_vetting_academic_range",
+          "value": "\"candidates\".\"vetting_academic\" between 0 and 25"
+        },
+        "candidates_vetting_character_range": {
+          "name": "candidates_vetting_character_range",
+          "value": "\"candidates\".\"vetting_character\" between 0 and 25"
+        },
+        "candidates_vetting_interview_range": {
+          "name": "candidates_vetting_interview_range",
+          "value": "\"candidates\".\"vetting_interview\" between 0 and 25"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.positions": {
+      "name": "positions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "tenant_id": {
+          "name": "tenant_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "display_order": {
+          "name": "display_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "eligible_classes": {
+          "name": "eligible_classes",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "election_date": {
+          "name": "election_date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "positions_tenant_order_idx": {
+          "name": "positions_tenant_order_idx",
+          "columns": [
+            {
+              "expression": "tenant_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "display_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "positions_tenant_id_tenants_id_fk": {
+          "name": "positions_tenant_id_tenants_id_fk",
+          "tableFrom": "positions",
+          "columnsFrom": [
+            "tenant_id"
+          ],
+          "tableTo": "tenants",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "positions_tenant_id_id_pk": {
+          "name": "positions_tenant_id_id_pk",
+          "columns": [
+            "tenant_id",
+            "id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.tenants": {
+      "name": "tenants",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "subdomain": {
+          "name": "subdomain",
+          "type": "varchar(63)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "school_name": {
+          "name": "school_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "primary_color": {
+          "name": "primary_color",
+          "type": "varchar(7)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'#1e40af'"
+        },
+        "secondary_color": {
+          "name": "secondary_color",
+          "type": "varchar(7)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'#f59e0b'"
+        },
+        "logo_url": {
+          "name": "logo_url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "motto": {
+          "name": "motto",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "tenants_subdomain_unique": {
+          "name": "tenants_subdomain_unique",
+          "columns": [
+            "subdomain"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "tenants_subdomain_format": {
+          "name": "tenants_subdomain_format",
+          "value": "\"tenants\".\"subdomain\" ~ '^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$'"
+        },
+        "tenants_primary_color_hex": {
+          "name": "tenants_primary_color_hex",
+          "value": "\"tenants\".\"primary_color\" ~ '^#[0-9a-fA-F]{6}$'"
+        },
+        "tenants_secondary_color_hex": {
+          "name": "tenants_secondary_color_hex",
+          "value": "\"tenants\".\"secondary_color\" ~ '^#[0-9a-fA-F]{6}$'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "tenant_id": {
+          "name": "tenant_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password_hash": {
+          "name": "password_hash",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "full_name": {
+          "name": "full_name",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'teacher'"
+        },
+        "is_active": {
+          "name": "is_active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "last_login": {
+          "name": "last_login",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "users_tenant_id_tenants_id_fk": {
+          "name": "users_tenant_id_tenants_id_fk",
+          "tableFrom": "users",
+          "columnsFrom": [
+            "tenant_id"
+          ],
+          "tableTo": "tenants",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "unique_email_per_tenant": {
+          "name": "unique_email_per_tenant",
+          "columns": [
+            "tenant_id",
+            "email"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "users_role_valid": {
+          "name": "users_role_valid",
+          "value": "\"users\".\"role\" in ('super_admin', 'admin', 'teacher')"
+        },
+        "users_email_lowercase": {
+          "name": "users_email_lowercase",
+          "value": "\"users\".\"email\" = lower(\"users\".\"email\")"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "views": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}
