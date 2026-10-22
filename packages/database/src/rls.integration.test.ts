@@ -3,6 +3,8 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { runMigrations } from "./migrate.js";
+import { provisionApplicationRole } from "./provision-app-role.js";
+import { assertApplicationRole } from "./role-guard.js";
 import * as schema from "./schema/index.js";
 import { positions } from "./schema/index.js";
 import { resolveTenantBySubdomain, withTenant } from "./tenant-context.js";
@@ -372,6 +374,29 @@ describe.skipIf(!adminUrl)("EVT-104 row-level security (real PostgreSQL)", () =>
     it("resolves a subdomain to a school id", async () => {
       expect(await resolveTenantBySubdomain(db, "rls-b")).toBe(id.b);
       expect(await resolveTenantBySubdomain(db, "nope")).toBeNull();
+    });
+  });
+
+  describe("application role guard", () => {
+    it("accepts the application role", async () => {
+      const pool = new pg.Pool({ connectionString: testUrl, options: "-c role=evote_app", max: 1 });
+      try {
+        await expect(assertApplicationRole(drizzle(pool, { schema }))).resolves.toBeUndefined();
+      } finally {
+        await pool.end();
+      }
+    });
+
+    it("refuses a role that bypasses row-level security (the owner or a superuser)", async () => {
+      await expect(assertApplicationRole(drizzle(owner, { schema }))).rejects.toThrow(
+        "bypasses Row-Level Security",
+      );
+    });
+
+    it("refuses an application role password that is too short, before connecting", async () => {
+      await expect(provisionApplicationRole("postgres://unused", "short")).rejects.toThrow(
+        "at least 12 characters",
+      );
     });
   });
 });
