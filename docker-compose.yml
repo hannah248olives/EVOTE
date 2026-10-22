@@ -40,13 +40,13 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      PORT: 3000
+      PORT: 3001
       HOST: 0.0.0.0
       LOG_LEVEL: ${LOG_LEVEL:-info}
       DATABASE_URL: postgres://${POSTGRES_USER:-evote}:${POSTGRES_PASSWORD:-evote_dev_password}@postgres:5432/${POSTGRES_DB:-evote}
       REDIS_URL: redis://redis:6379
     ports:
-      - "${API_PORT:-3000}:3000"
+      - "${API_PORT:-3001}:3001"
     depends_on:
       postgres:
         condition: service_healthy
