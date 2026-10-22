@@ -12,7 +12,9 @@ export async function provisionApplicationRole(
   password: string,
 ): Promise<void> {
   if (password.length < MIN_APP_PASSWORD_LENGTH) {
-    throw new Error(`The application role password must be at least ${MIN_APP_PASSWORD_LENGTH} characters`);
+    throw new Error(
+      `The application role password must be at least ${MIN_APP_PASSWORD_LENGTH} characters`,
+    );
   }
   const client = new pg.Client({ connectionString: ownerConnectionString });
   await client.connect();
